@@ -113,7 +113,6 @@ int main()
     lc3int getOpcode(0xf000);
     lc3int getOprand(0xfff);
     lc3int HALT(0xf000);
-    int buffer;
 
     getline(cin, inst);
     instCount = PC = str2int(inst);
@@ -175,10 +174,7 @@ int main()
     } while (opcode != HALT);
 
     for (int i = 0; i < 8; i++)
-    {
-        buffer = reg[i].to_ulong();
-        printf("R%d = x%04hX\n", i, buffer);
-    }
+        printf("R%d = x%04hX\n", i, reg[i].to_ulong());
 
     return 0;
 }
