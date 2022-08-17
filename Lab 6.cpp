@@ -30,16 +30,16 @@ lc3int mem[0xffff];
 
 int str2int(string inst);
 int decodeInst(lc3int opcode);
-lc3int lc3Add(lc3int num1, lc3int num2);
+lc3int operator+(lc3int num1, lc3int num2);
 lc3int SEXT(int bits, lc3int inst);
 void setCC(lc3int result);
 
 void instADD(lc3int inst)
 {
     if (inst[5])
-        getReg(11, 10, 9) = lc3Add(getReg(8, 7, 6), SEXT(5, inst));
+        getReg(11, 10, 9) = getReg(8, 7, 6) + SEXT(5, inst);
     else
-        getReg(11, 10, 9) = lc3Add(getReg(8, 7, 6), getReg(2, 1, 0));
+        getReg(11, 10, 9) = getReg(8, 7, 6) + getReg(2, 1, 0);
     setCC(getReg(11, 10, 9));
 }
 void instAND(lc3int inst)
@@ -53,7 +53,7 @@ void instAND(lc3int inst)
 void instBR(lc3int inst)
 {
     if ((inst[11] & PSR[2]) || (inst[10] & PSR[1]) || (inst[9] & PSR[0]))
-        PC = lc3Add(PC, SEXT(9, inst));
+        PC = PC + SEXT(9, inst);
 }
 void instJMP(lc3int inst)
 {
@@ -63,28 +63,28 @@ void instJSR(lc3int inst)
 {
     reg[7] = PC;
     if (inst[11])
-        PC = lc3Add(PC, SEXT(11, inst));
+        PC = PC + SEXT(11, inst);
     else
         PC = getReg(8, 7, 6);
 }
 void instLD(lc3int inst)
 {
-    getReg(11, 10, 9) = mem[lc3Add(PC, SEXT(9, inst)).to_ulong()];
+    getReg(11, 10, 9) = mem[(PC + SEXT(9, inst)).to_ulong()];
     setCC(getReg(11, 10, 9));
 }
 void instLDI(lc3int inst)
 {
-    getReg(11, 10, 9) = mem[mem[lc3Add(PC, SEXT(9, inst)).to_ulong()].to_ulong()];
+    getReg(11, 10, 9) = mem[mem[(PC + SEXT(9, inst)).to_ulong()].to_ulong()];
     setCC(getReg(11, 10, 9));
 }
 void instLDR(lc3int inst)
 {
-    getReg(11, 10, 9) = mem[lc3Add(getReg(8, 7, 6), SEXT(6, inst)).to_ulong()];
+    getReg(11, 10, 9) = mem[(getReg(8, 7, 6) + SEXT(6, inst)).to_ulong()];
     setCC(getReg(11, 10, 9));
 }
 void instLEA(lc3int inst)
 {
-    getReg(11, 10, 9) = lc3Add(PC, SEXT(9, inst));
+    getReg(11, 10, 9) = PC + SEXT(9, inst);
 }
 void instNOT(lc3int inst)
 {
@@ -93,15 +93,15 @@ void instNOT(lc3int inst)
 }
 void instST(lc3int inst)
 {
-    mem[lc3Add(PC, SEXT(9, inst)).to_ulong()] = getReg(11, 10, 9);
+    mem[(PC + SEXT(9, inst)).to_ulong()] = getReg(11, 10, 9);
 }
 void instSTI(lc3int inst)
 {
-    mem[mem[lc3Add(PC, SEXT(9, inst)).to_ulong()].to_ulong()] = getReg(11, 10, 9);
+    mem[mem[(PC + SEXT(9, inst)).to_ulong()].to_ulong()] = getReg(11, 10, 9);
 }
 void instSTR(lc3int inst)
 {
-    mem[lc3Add(getReg(8, 7, 6), SEXT(6, inst)).to_ulong()] = getReg(11, 10, 9);
+    mem[(getReg(8, 7, 6) + SEXT(6, inst)).to_ulong()] = getReg(11, 10, 9);
 }
 
 int main()
@@ -225,7 +225,7 @@ int decodeInst(lc3int opcode)
         return ISA::HALT;
 }
 
-lc3int lc3Add(lc3int num1, lc3int num2)
+lc3int operator+(lc3int num1, lc3int num2)
 {
     lc3int lc3Add(0x0);
     bitset<2> sum(0x0);
